@@ -35,11 +35,11 @@ class SignUpScreen extends StatelessWidget {
             Positioned(
                 top: 100,
                 left: 30,
-                child: _buildDot(20.0, Colors.white.withOpacity(0.3))),
+                child: _buildDot(20.0, Colors.white.withAlpha((0.3 * 255).round()))),
             Positioned(
                 top: 200,
                 right: 10,
-                child: _buildDot(10.0, accentColor.withOpacity(0.5))),
+                child: _buildDot(10.0, accentColor.withAlpha((0.5 * 255).round()))),
         
             // 2. Scrollable Content
             SafeArea(

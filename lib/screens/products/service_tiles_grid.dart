@@ -1,3 +1,6 @@
+import 'package:cletech/screens/products/product_details/product_details.dart';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ServiceTilesGrid extends StatelessWidget {
@@ -72,8 +75,14 @@ class ServiceTilesGrid extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Tapped $label')));
+Navigator.of(context, rootNavigator: false).push(
+  CupertinoPageRoute(builder: (_) => MtnPackagesScreen(network: label.contains("MTN")
+      ? "MTN"
+      : label.contains("Telecel")
+          ? "Telecel"
+          : "AirtelTigo")),
+);
+
         },
         child: Container(
           width: width,
@@ -106,7 +115,7 @@ class ServiceTilesGrid extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withAlpha((0.3 * 255).round()),
                   ),
                   padding: const EdgeInsets.all(12),
                   child: ClipOval(

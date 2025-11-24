@@ -77,7 +77,11 @@ class MainContentCard extends StatelessWidget {
       print('Sign-in canceled or failed');
     }
   },
-     
+     icon: Image.asset(
+        'assets/images/google.png',
+        height: 24,
+        width: 24,
+      ),
       label: const Text(
         'Continue with Google',
         style: TextStyle(fontSize: 18, color: Colors.black54),

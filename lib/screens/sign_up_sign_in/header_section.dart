@@ -36,7 +36,7 @@ class HeaderSection extends StatelessWidget {
           'Your Gateway to Unlimited Data',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withAlpha((0.8 * 255).round()),
           ),
         ),
       ],
