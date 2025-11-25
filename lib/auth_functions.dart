@@ -44,49 +44,44 @@ Future<void> signOut() async {
   await _googleSignIn.signOut();
 }
 
-Future<Map<String, dynamic>?> getUserDetails(String uid) async {
+Future<Map<String, dynamic>> fetchAppData(String uid) async {
   try {
-    DocumentSnapshot doc =
-        await FirebaseFirestore.instance.collection('Customers').doc(uid).get();
-
-    if (doc.exists) {
-      return doc.data() as Map<String, dynamic>;
-    } else {
-      print("User document not found");
-      return null;
-    }
-  } catch (e) {
-    print("Error getting user details: $e");
-    return null;
-  }
-}
-Future<List<Map<String, dynamic>>> getUserOrders(String uid) async {
-  try {
-    // 1. Get user document to obtain email
-    final userDoc = await FirebaseFirestore.instance
+    // Fetch user document
+    final userFuture = FirebaseFirestore.instance
         .collection('Customers')
         .doc(uid)
         .get();
 
+    // Fetch package document (agent/admin)
+    final packageFuture = FirebaseFirestore.instance
+        .collection('Packages')
+        .doc('HVypJNRxTxdgg9s7LMUzFqsQW8p2')
+        .get();
+
+    final userDoc = await userFuture;
+
     if (!userDoc.exists) {
       print("User not found");
-      return [];
+      return {};
     }
 
     final String email = userDoc['email'];
 
-    // 2. Query payment collection by email + status == success
-    final querySnapshot = await FirebaseFirestore.instance
+    // Fetch user orders
+    final ordersFuture = FirebaseFirestore.instance
         .collection('payments')
         .where('email', isEqualTo: email)
         .where('status', isEqualTo: 'success')
         .orderBy('createdAt', descending: true)
         .get();
 
-    // 3. Map only the fields you want
-    List<Map<String, dynamic>> orders = querySnapshot.docs.map((doc) {
-      final data = doc.data();
+    final results = await Future.wait([ordersFuture, packageFuture]);
 
+    final ordersSnapshot = results[0] as QuerySnapshot;
+    final packageDoc = results[1] as DocumentSnapshot;
+
+    final orders = ordersSnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
       return {
         'amount': data['amount'],
         'bundle': data['bundle'],
@@ -96,29 +91,16 @@ Future<List<Map<String, dynamic>>> getUserOrders(String uid) async {
       };
     }).toList();
 
-    return orders;
+    final packageData = packageDoc.exists ? packageDoc.data() as Map<String, dynamic> : null;
+
+    // Combine all into a single object for app context
+    return {
+      'user': userDoc.data(),
+      'orders': orders,
+      'package': packageData,
+    };
   } catch (e) {
-    print("Error fetching user orders: $e");
-    return [];
+    print("Error fetching app data: $e");
+    return {};
   }
 }
-
-Future<Map<String, dynamic>?> getPackageById(String docId) async {
-  try {
-    final doc = await FirebaseFirestore.instance
-        .collection('Packages')
-        .doc(docId)
-        .get();
-
-    if (doc.exists) {
-      return doc.data();  
-    } else {
-      print("Package not found");
-      return null;
-    }
-  } catch (e) {
-    print("Error fetching package: $e");
-    return null;
-  }
-}
-

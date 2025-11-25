@@ -5,30 +5,31 @@ import 'package:cletech/screens/products/quick_package_card.dart'; // new import
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-class ProductsScreen extends StatelessWidget {
-  const ProductsScreen({super.key});
+class ProductsScreen extends StatefulWidget {
+  final Map<String, dynamic>? packages;
+  const ProductsScreen({super.key, this.packages});
 
+  @override
+  State<ProductsScreen> createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     // Sample top 3 quick packages
     final List<Map<String, String>> quickPackages = [
-      {
-        "network": "MTN",
-        "data": "1 GB",
-        "price": "₵1.00",
-        "validity": "1 day"
-      },
+      {"network": "MTN", "data": "1 GB", "price": "₵1.00", "validity": "1 day"},
       {
         "network": "Vodafone",
         "data": "2 GB",
         "price": "₵2.50",
-        "validity": "3 days"
+        "validity": "3 days",
       },
       {
         "network": "AirtelTigo",
         "data": "5 GB",
         "price": "₵5.00",
-        "validity": "7 days"
+        "validity": "7 days",
       },
     ];
 
@@ -69,7 +70,10 @@ class ProductsScreen extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFFFFF59D), Color(0xFFFFF176)],
@@ -127,18 +131,17 @@ class ProductsScreen extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-             
-TweenAnimationBuilder<double>(
-  tween: Tween<double>(begin: 0, end: 1),
-  duration: const Duration(milliseconds: 500),
-  builder: (context, value, child) => Opacity(opacity: value, child: child),
-  child: BecomeAgentCard(
-    onTap: () {
-      // Navigate to become agent page
-    },
-  ),
-),
-
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 500),
+                  builder: (context, value, child) =>
+                      Opacity(opacity: value, child: child),
+                  child: BecomeAgentCard(
+                    onTap: () {
+                      // Navigate to become agent page
+                    },
+                  ),
+                ),
 
                 const SizedBox(height: 24),
 
@@ -149,7 +152,9 @@ TweenAnimationBuilder<double>(
                     const Text(
                       "Quick Packages",
                       style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -185,7 +190,20 @@ TweenAnimationBuilder<double>(
                       ),
                     );
                   },
-                  child: const ServiceTilesGrid(),
+                  child: ServiceTilesGrid(
+                    telecelBundles: widget.packages!=null && widget.packages!['telecel'] != null
+                        ? List<Map<String, dynamic>>.from(
+                            widget.packages!['telecel'])
+                        : [],
+                    mtnBundles: widget.packages!=null && widget.packages!['mtn'] != null
+                        ? List<Map<String, dynamic>>.from(
+                            widget.packages!['mtn'])
+                        : [],
+                    airtelTigoBundles: widget.packages!=null && widget.packages!['airteltigo'] != null
+                        ? List<Map<String, dynamic>>.from(
+                            widget.packages!['airteltigo'])
+                        : [],
+                  ),
                 ),
 
                 const SizedBox(height: 40),

@@ -3,16 +3,25 @@ import 'package:cletech/screens/products/product_details/data_bundle_card.dart';
 import 'package:cletech/screens/products/product_details/models/data_bundle.dart';
 import 'package:flutter/material.dart';
 
-
-class MtnPackagesScreen extends StatelessWidget {
+class PackagesScreen extends StatefulWidget {
   final String network;
-  const MtnPackagesScreen({super.key, required this.network});
+  final List<Map<String, dynamic>> FirebaseBundles;
+  const PackagesScreen({
+    super.key,
+    required this.network,
+    required this.FirebaseBundles,
+  });
 
+  @override
+  State<PackagesScreen> createState() => _PackagesScreenState();
+}
+
+class _PackagesScreenState extends State<PackagesScreen> {
   @override
   Widget build(BuildContext context) {
     // Determine background decoration
     BoxDecoration backgroundDecoration;
-    switch (network) {
+    switch (widget.network) {
       case "MTN":
         backgroundDecoration = BoxDecoration(
           color: Colors.yellow.withAlpha((0.1 * 255).round()),
@@ -20,13 +29,16 @@ class MtnPackagesScreen extends StatelessWidget {
         break;
       case "Telecel":
         backgroundDecoration = BoxDecoration(
-          color: Colors.red.withAlpha((0.1*255).round()),
+          color: Colors.red.withAlpha((0.1 * 255).round()),
         );
         break;
       case "AirtelTigo":
         backgroundDecoration = BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.purple.withAlpha((0.2*255).round()), Colors.red.withAlpha((0.2*255).round())],
+            colors: [
+              Colors.purple.withAlpha((0.2 * 255).round()),
+              Colors.red.withAlpha((0.2 * 255).round()),
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -37,24 +49,29 @@ class MtnPackagesScreen extends StatelessWidget {
     }
 
     // Example bundles for demonstration
-    final List<DataBundle> bundles = [
-      DataBundle(label: "1GB", dataAmount: "1GB", cost: "GHC 4", type: "Regular"),
-      DataBundle(label: "2GB", dataAmount: "2GB", cost: "GHC 8", type: "Regular"),
-      DataBundle(label: "3GB", dataAmount: "3GB", cost: "GHC 12", type: "Regular"),
-    ];
+     final List<DataBundle> bundles = [];
+    for (var item in widget.FirebaseBundles) {
+      bundles.add(DataBundle(label: item['name'], dataAmount: item['dataVolume'], cost: item['price'].toString(), type: item['validity'], id: item['id'],));
+    }
 
     return Scaffold(
       body: Container(
         decoration: backgroundDecoration,
         child: Column(
           children: [
-            AppHeader(title: "$network Data Packages", network: network),
+            AppHeader(
+              title: "${widget.network} Data Packages",
+              network: widget.network,
+            ),
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: bundles.length,
                 itemBuilder: (context, index) {
-                  return DataBundleCard(bundle: bundles[index],network: network,);
+                  return DataBundleCard(
+                    bundle: bundles[index],
+                    network: widget.network,
+                  );
                 },
               ),
             ),
@@ -64,4 +81,3 @@ class MtnPackagesScreen extends StatelessWidget {
     );
   }
 }
-
