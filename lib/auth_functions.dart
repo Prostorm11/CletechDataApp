@@ -65,22 +65,22 @@ Future<Map<String, dynamic>> fetchAppData(String uid) async {
       return {};
     }
 
-    final String email = userDoc['email'];
+   /*  final String email = userDoc['email']; */
 
     // Fetch user orders
-    final ordersFuture = FirebaseFirestore.instance
+    /* final ordersFuture = FirebaseFirestore.instance
         .collection('payments')
         .where('email', isEqualTo: email)
-        .where('status', isEqualTo: 'success')
+        
         .orderBy('createdAt', descending: true)
-        .get();
+        .get(); */
 
-    final results = await Future.wait([ordersFuture, packageFuture]);
+    final results = await Future.wait([ packageFuture]);
+/* 
+    final ordersSnapshot = results[0] as QuerySnapshot; */
+    final packageDoc = results[0] as DocumentSnapshot;
 
-    final ordersSnapshot = results[0] as QuerySnapshot;
-    final packageDoc = results[1] as DocumentSnapshot;
-
-    final orders = ordersSnapshot.docs.map((doc) {
+    /* final orders = ordersSnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return {
         'amount': data['amount'],
@@ -88,19 +88,48 @@ Future<Map<String, dynamic>> fetchAppData(String uid) async {
         'customer_phone': data['customer_phone'],
         'delivered': data['delivered'],
         'createdAt': data['createdAt'],
+        'status': data['status'],
       };
-    }).toList();
+    }).toList(); */
 
     final packageData = packageDoc.exists ? packageDoc.data() as Map<String, dynamic> : null;
 
     // Combine all into a single object for app context
     return {
       'user': userDoc.data(),
-      'orders': orders,
       'package': packageData,
     };
   } catch (e) {
     print("Error fetching app data: $e");
     return {};
   }
+}
+
+Future<void> updateUserProfile(Map<String, dynamic> data) async {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  await FirebaseFirestore.instance.collection("Customers").doc(uid).update(data);
+}
+
+Future<List<Map<String, dynamic>>> getOrders(email) async {
+   final ordersFuture = FirebaseFirestore.instance
+        .collection('payments')
+        .where('email', isEqualTo: email)
+        
+        .orderBy('createdAt', descending: true)
+        .get(); 
+
+      var ordersSnapshot=await ordersFuture;
+      final orders = ordersSnapshot.docs.map((doc) {
+      final data = doc.data();
+      return {
+        'amount': (data['amount'] as num).toDouble(),
+        'bundle': data['bundle'],
+        'customer_phone': data['customer_phone'],
+        'delivered': data['delivered'],
+        'createdAt': data['createdAt'],
+        'status': data['status'],
+      };
+    }).toList();
+
+  return orders;
 }

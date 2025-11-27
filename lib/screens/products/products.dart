@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cletech/screens/products/become_agent_card.dart';
 import 'package:cletech/screens/products/service_tiles_grid.dart';
 import 'package:cletech/screens/products/welcome_card.dart';
@@ -6,8 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
 class ProductsScreen extends StatefulWidget {
+  final Map<String, dynamic>? userInfo;
   final Map<String, dynamic>? packages;
-  const ProductsScreen({super.key, this.packages});
+  const ProductsScreen({super.key, this.userInfo, this.packages});
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
@@ -17,21 +20,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     // Sample top 3 quick packages
-    final List<Map<String, String>> quickPackages = [
-      {"network": "MTN", "data": "1 GB", "price": "₵1.00", "validity": "1 day"},
-      {
-        "network": "Vodafone",
-        "data": "2 GB",
-        "price": "₵2.50",
-        "validity": "3 days",
-      },
-      {
-        "network": "AirtelTigo",
-        "data": "5 GB",
-        "price": "₵5.00",
-        "validity": "7 days",
-      },
-    ];
+    final List<Map<String, String>> quickPackages = [];
+   if (widget.packages != null) {
+  final mtnPackages = widget.packages!['mtn'];
+
+  if (mtnPackages is List && mtnPackages.isNotEmpty) {
+    for (int i = 0; i < 3; i++) {
+      final topPackage = mtnPackages[Random().nextInt(mtnPackages.length)];
+
+      quickPackages.add({
+        "network": "MTN",
+        "data": topPackage['dataVolume'] ?? 'N/A',
+        "price": topPackage['price']?.toString() ?? 'N/A',
+        "validity": topPackage['validity'] ?? 'N/A',
+      });
+    }
+  }
+}
+
+
 
     return Scaffold(
       body: Stack(
@@ -126,7 +133,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       ),
                     );
                   },
-                  child: const WelcomeCard(userName: 'Derrick Marfo'),
+                  child: WelcomeCard(
+                    userName:
+                        widget.userInfo != null &&
+                            widget.userInfo!['name'] != null
+                        ? widget.userInfo!['name']
+                        : 'User',
+                  ),
                 ),
 
                 const SizedBox(height: 24),
@@ -191,17 +204,26 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     );
                   },
                   child: ServiceTilesGrid(
-                    telecelBundles: widget.packages!=null && widget.packages!['telecel'] != null
+                    telecelBundles:
+                        widget.packages != null &&
+                            widget.packages!['telecel'] != null
                         ? List<Map<String, dynamic>>.from(
-                            widget.packages!['telecel'])
+                            widget.packages!['telecel'],
+                          )
                         : [],
-                    mtnBundles: widget.packages!=null && widget.packages!['mtn'] != null
+                    mtnBundles:
+                        widget.packages != null &&
+                            widget.packages!['mtn'] != null
                         ? List<Map<String, dynamic>>.from(
-                            widget.packages!['mtn'])
+                            widget.packages!['mtn'],
+                          )
                         : [],
-                    airtelTigoBundles: widget.packages!=null && widget.packages!['airteltigo'] != null
+                    airtelTigoBundles:
+                        widget.packages != null &&
+                            widget.packages!['airteltigo'] != null
                         ? List<Map<String, dynamic>>.from(
-                            widget.packages!['airteltigo'])
+                            widget.packages!['airteltigo'],
+                          )
                         : [],
                   ),
                 ),

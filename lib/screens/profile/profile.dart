@@ -2,18 +2,135 @@ import 'package:cletech/auth_functions.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final Map<String, dynamic> userInfo;
+
+
+  const ProfileScreen({super.key, required this.userInfo});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _nameController = TextEditingController(text: "Derrick Marfo");
-  final _emailController = TextEditingController(text: "derrick@example.com");
-  final _phoneController = TextEditingController(text: "024xxxxxxx");
-  final _regionController = TextEditingController(text: "Accra");
-  final _momoController = TextEditingController(text: "054xxxxxxx");
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _regionController;
+  late final TextEditingController _momoController;
+  bool statsLoaded = false;
+  late int totalOrders;
+  late double totalSpent;
+
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.userInfo['name'] ?? '');
+    _emailController = TextEditingController(text: widget.userInfo['email'] ?? '');
+    _phoneController = TextEditingController(text: widget.userInfo['phone'] ?? '');
+    _regionController = TextEditingController(text: widget.userInfo['region'] ?? '');
+    _momoController = TextEditingController(text: widget.userInfo['momo'] ?? '');
+    getStats();
+  }
+   Future<void> getStats() async{
+    int totalOrderst=0;
+    double totalSpentt=0.0;
+    final orders=await getOrders( widget.userInfo['email'] ?? '');
+    for(var order in orders){
+      totalSpentt+=order['amount']??0;
+      totalOrderst+=1;
+    }
+    setState(() {
+      totalOrders = totalOrderst;
+      totalSpent = totalSpentt;
+      statsLoaded = true;
+    });
+   }
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _regionController.dispose();
+    _momoController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveChanges() async {
+    setState(() => _saving = true);
+
+    try {
+      await updateUserProfile({
+        "name": _nameController.text.trim(),
+        "phone": _phoneController.text.trim(),
+        "region": _regionController.text.trim(),
+        "momo": _momoController.text.trim(),
+      });
+
+     ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    behavior: SnackBarBehavior.floating,
+    elevation: 8,
+    backgroundColor: Colors.white,
+    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    duration: const Duration(seconds: 2),
+    content: Row(
+      children: const [
+        Icon(Icons.check_circle, color: Colors.green, size: 28),
+        SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            "Profile updated successfully!",
+            style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    behavior: SnackBarBehavior.floating,
+    elevation: 8,
+    backgroundColor: Colors.white,
+    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    duration: const Duration(seconds: 2),
+    content: Row(
+      children:  [
+        Icon(Icons.check_circle, color: Colors.green, size: 28),
+        SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            "Profile update failed: $e",
+            style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
+    }
+
+    setState(() => _saving = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +142,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // HEADER
               const SizedBox(height: 16),
               const Center(
                 child: CircleAvatar(
@@ -39,14 +155,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Text(
                   "Your Profile",
                   style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepOrangeAccent),
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepOrangeAccent,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
 
-              // --- USER INFO CARD ---
               _buildCard(
                 child: Column(
                   children: [
@@ -61,35 +177,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: 20),
 
-              // --- CHANGE PASSWORD CARD ---
-              _buildCard(
-                child: ListTile(
-                  leading: const Icon(Icons.lock_outline, color: Colors.deepOrange),
-                  title: const Text("Change Password"),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 18),
-                  onTap: () {
-                    // Navigate to change password
-                  },
-                ),
-              ),
+              // REMOVE CHANGE PASSWORD → Just delete the card
 
               const SizedBox(height: 20),
 
-              // --- ACCOUNT STATS CARD ---
               _buildCard(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: const [
-                    _StatItem(title: "Total Orders", value: "12"),
-                    _StatItem(title: "Active Bundles", value: "3"),
-                    _StatItem(title: "Total Spent", value: "₵45.00"),
+                  children: [
+                    _StatItem(title: "Total Orders", value: statsLoaded ? "$totalOrders" : "--"),
+                    
+                    _StatItem(title: "Total Spent", value: statsLoaded ? "₵$totalSpent" : "--"),
                   ],
                 ),
               ),
 
               const SizedBox(height: 32),
 
-              // --- LOGOUT BUTTON ---
+              // --- SAVE CHANGES BUTTON ---
+              ElevatedButton.icon(
+                onPressed: _saving ? null : _saveChanges,
+                icon: _saving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.save),
+                label: Text(
+                  _saving ? "Saving..." : "Save Changes",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellow.shade700,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // --- LOGOUT BUTTON --- 
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () async {
@@ -105,7 +238,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 32, vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -118,7 +252,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // --- Card helper ---
   Widget _buildCard({required Widget child}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -163,7 +296,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// --- STAT ITEM ---
 class _StatItem extends StatelessWidget {
   final String title;
   final String value;
@@ -173,15 +305,23 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value,
-            style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepOrange)),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.deepOrange,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(title,
-            style: TextStyle(
-                fontSize: 14, color: Colors.grey.shade700, fontWeight: FontWeight.w500)),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey.shade700,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
