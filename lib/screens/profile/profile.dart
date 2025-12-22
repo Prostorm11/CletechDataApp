@@ -37,7 +37,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     int totalOrderst=0;
     double totalSpentt=0.0;
     final orders=await getOrders( widget.userInfo['email'] ?? '');
-    for(var order in orders){
+    
+    final successOrders = orders
+    .where((order) =>
+        (order['status'] ?? '').toString().toLowerCase() == 'success')
+    .toList();
+
+    
+    for(var order in successOrders){
       totalSpentt+=order['amount']??0;
       totalOrderst+=1;
     }

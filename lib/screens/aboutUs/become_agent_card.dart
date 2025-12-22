@@ -4,12 +4,10 @@ import 'package:lottie/lottie.dart';
 
 class BecomeAgentCard extends StatefulWidget {
   final String agentLink;
-  
 
   const BecomeAgentCard({
     super.key,
     required this.agentLink,
-    
   });
 
   @override
@@ -24,10 +22,12 @@ class _BecomeAgentCardState extends State<BecomeAgentCard>
   @override
   void initState() {
     super.initState();
+    // Setup the bouncing animation for the button
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
+    
     _bounceAnimation = Tween<double>(begin: 0, end: -10)
         .chain(CurveTween(curve: Curves.easeInOut))
         .animate(_controller);
@@ -35,12 +35,27 @@ class _BecomeAgentCardState extends State<BecomeAgentCard>
     _controller.repeat(reverse: true);
   }
 
-  void _openBecomeAgent(String link) async {
-    final url = Uri.parse(link);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      debugPrint("Could not launch $url");
+  /// Opens the link in the device's default external browser
+  Future<void> _openBecomeAgent(String link) async {
+    final Uri url = Uri.parse(link);
+    
+    try {
+      // LaunchMode.externalApplication is critical for opening the actual browser app
+      if (await canLaunchUrl(url)) {
+        await launchUrl(
+          url,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        debugPrint("Could not launch $url");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Could not open the browser.")),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
     }
   }
 
@@ -53,30 +68,37 @@ class _BecomeAgentCardState extends State<BecomeAgentCard>
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // --- Lottie Robot ---
-            Lottie.asset("assets/lottie/robot.json", width: 100, height: 100),
+            // --- Lottie Robot Animation ---
+            Lottie.asset(
+              "assets/lottie/robot.json", 
+              width: 120, 
+              height: 120,
+              fit: BoxFit.contain,
+            ),
 
             const SizedBox(height: 12),
 
             // --- Text Content ---
             const Text(
               "Join this journey with us",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             const Text(
               "Make money by becoming an agent selling data bundles.",
               style: TextStyle(fontSize: 16, color: Colors.black54),
               textAlign: TextAlign.center,
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // --- Bouncy Become Agent Button ---
             AnimatedBuilder(
@@ -90,17 +112,21 @@ class _BecomeAgentCardState extends State<BecomeAgentCard>
               child: ElevatedButton(
                 onPressed: () => _openBecomeAgent(widget.agentLink),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange.shade600,
+                  backgroundColor: Colors.orange.shade700,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 12),
+                      horizontal: 32, vertical: 14),
+                  elevation: 5,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: const Text(
                   "Become an Agent",
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                      fontSize: 16, 
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 0.5),
                 ),
               ),
             ),

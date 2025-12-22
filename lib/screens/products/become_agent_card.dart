@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BecomeAgentCard extends StatefulWidget {
-  final VoidCallback? onTap;
+  final String agentLink;
 
-  const BecomeAgentCard({super.key, this.onTap});
+  const BecomeAgentCard({super.key, this.agentLink = ""});
 
   @override
   State<BecomeAgentCard> createState() => _BecomeAgentCardState();
@@ -13,6 +14,29 @@ class _BecomeAgentCardState extends State<BecomeAgentCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _jumpAnimation;
+
+   Future<void> _openBecomeAgent(String link) async {
+    final Uri url = Uri.parse(link);
+    
+    try {
+      // LaunchMode.externalApplication is critical for opening the actual browser app
+      if (await canLaunchUrl(url)) {
+        await launchUrl(
+          url,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        debugPrint("Could not launch $url");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Could not open the browser.")),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+  }
 
   @override
   void initState() {
@@ -56,7 +80,7 @@ class _BecomeAgentCardState extends State<BecomeAgentCard>
     return ScaleTransition(
       scale: _jumpAnimation,
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: () => _openBecomeAgent(widget.agentLink),
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           child: Container(

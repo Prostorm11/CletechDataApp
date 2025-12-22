@@ -9,7 +9,6 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
@@ -28,12 +27,13 @@ class AboutScreen extends StatelessWidget {
               ContactUsCard(phoneNumber: "+233 123 456 789"),
               SizedBox(height: 24),
               WhatsAppGroupCard(
-                  groupLink: "https://chat.whatsapp.com/yourgroupid"),
+                groupLink:
+                    "https://whatsapp.com/channel/0029VbBXZah1iUxZmXGEwR3I",
+              ),
               SizedBox(height: 24),
               BecomeAgentCard(
-                  agentLink: "https://yourwebsite.com/become-agent",
-                  
-                  ),
+                agentLink: "https://www.cletechbundlesdashboard.com/welcome",
+              ),
               SizedBox(height: 32),
             ],
           ),

@@ -109,8 +109,17 @@ Future<Map<String, dynamic>> fetchAppData(String uid) async {
 
 
 Future<void> updateUserProfile(Map<String, dynamic> data) async {
-  final uid = FirebaseAuth.instance.currentUser!.uid;
-  await FirebaseFirestore.instance.collection("Customers").doc(uid).update(data);
+  final uid = FirebaseAuth.instance.currentUser!.uid; // still Firebase Auth
+  final supabase = Supabase.instance.client;
+
+  final response = await supabase
+      .from('Customers')   // your table name
+      .update(data)
+      .eq('id', uid);      // match the Firebase uid
+
+  if (response.error != null) {
+    throw response.error!;
+  }
 }
 
 Future<List<Map<String, dynamic>>> getOrders(String email) async {

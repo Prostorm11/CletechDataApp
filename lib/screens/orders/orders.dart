@@ -2,6 +2,7 @@ import 'package:cletech/screens/orders/models/data_package.dart';
 import 'package:cletech/screens/orders/order_stats_card.dart';
 import 'package:cletech/screens/orders/orders_header.dart';
 import 'package:cletech/screens/orders/package_item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,6 +17,11 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
   final List<Map<String, dynamic>> _orders = [];
+  final String username = (FirebaseAuth.instance.currentUser?.displayName ?? "User")
+    .split(' ')
+    .take(2)
+    .join(' ');
+
   bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _hasMore = true;
@@ -196,7 +202,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         ),
 
                         // ─── HEADER ─────────────────────────────────
-                        const OrdersHeader(name: "Derrick Marfo"),
+                        OrdersHeader(name: username),
                         const SizedBox(height: 24),
 
                         // ─── STATS CARD ────────────────────────────

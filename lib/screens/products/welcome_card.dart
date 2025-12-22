@@ -6,18 +6,22 @@ class WelcomeCard extends StatelessWidget {
 
   const WelcomeCard({required this.userName, super.key});
 
+  String get firstTwoNames {
+    final parts = userName.split(' ');
+    return parts.take(2).join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
-        // Gradient color to mimic the yellow/orange look
         gradient: const LinearGradient(
-          colors: [Color(0xFFFFB300), Color(0xFFFF8F00)], // Shades of Orange/Yellow
+          colors: [Color(0xFFFFB300), Color(0xFFFF8F00)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20.0), // Rounded corners
+        borderRadius: BorderRadius.circular(20.0),
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -30,7 +34,7 @@ class WelcomeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Welcome $userName!',
+            'Welcome ${firstTwoNames}!',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,

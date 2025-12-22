@@ -8,11 +8,20 @@ class WhatsAppGroupCard extends StatelessWidget {
   const WhatsAppGroupCard({super.key, required this.groupLink});
 
   void _openWhatsapp(String link) async {
-    final url = Uri.parse(link);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      debugPrint("Could not launch $url");
+    final Uri url = Uri.parse(link);
+    
+    try {
+      // mode: LaunchMode.externalApplication is key for deep-linking into apps
+      if (await canLaunchUrl(url)) {
+        await launchUrl(
+          url, 
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        debugPrint("Could not launch $url");
+      }
+    } catch (e) {
+      debugPrint("Error launching WhatsApp: $e");
     }
   }
 

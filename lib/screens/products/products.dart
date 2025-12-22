@@ -150,9 +150,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   builder: (context, value, child) =>
                       Opacity(opacity: value, child: child),
                   child: BecomeAgentCard(
-                    onTap: () {
-                      // Navigate to become agent page
-                    },
+                  agentLink: "https://www.cletechbundlesdashboard.com/welcome",
                   ),
                 ),
 
