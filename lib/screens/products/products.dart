@@ -22,7 +22,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     // Sample top 3 quick packages
     final List<Map<String, String>> quickPackages = [];
    if (widget.packages != null) {
-  final mtnPackages = widget.packages!['mtn'];
+  final mtnPackages = widget.packages!['mtn']; 
 
   if (mtnPackages is List && mtnPackages.isNotEmpty) {
     for (int i = 0; i < 3; i++) {
@@ -30,7 +30,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
       quickPackages.add({
         "network": "MTN",
-        "data": topPackage['dataVolume'] ?? 'N/A',
+        "data": topPackage['data_volume'] ?? 'N/A',
         "price": topPackage['price']?.toString() ?? 'N/A',
         "validity": topPackage['validity'] ?? 'N/A',
       });

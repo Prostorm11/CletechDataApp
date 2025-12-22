@@ -85,24 +85,40 @@ class ServiceTilesGrid extends StatelessWidget {
       elevation: 6,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
-        onTap: () {
-          Navigator.of(context, rootNavigator: false).push(
-            CupertinoPageRoute(
-              builder: (_) => PackagesScreen(
-                network: label.contains("MTN")
-                    ? "MTN"
-                    : label.contains("Telecel")
-                    ? "Telecel"
-                    : "AirtelTigo",
-              FirebaseBundles: label.contains("MTN")
-                    ? mtnBundles
-                    : label.contains("Telecel")
-                        ? telecelBundles
-                        : airtelTigoBundles,
-              ),
-            ),
-          );
-        },
+      onTap: () {
+        Navigator.of(context, rootNavigator: false).push(
+          Theme.of(context).platform == TargetPlatform.iOS
+              ? CupertinoPageRoute(
+                  builder: (_) => PackagesScreen(
+                    network: label.toLowerCase().contains("mtn")
+                        ? "MTN"
+                        : label.toLowerCase().contains("telecel")
+                            ? "Telecel"
+                            : "AirtelTigo",
+                    FirebaseBundles: label.toLowerCase().contains("mtn")
+                        ? mtnBundles
+                        : label.toLowerCase().contains("telecel")
+                            ? telecelBundles
+                            : airtelTigoBundles,
+                  ),
+                )
+              : MaterialPageRoute(
+                  builder: (_) => PackagesScreen(
+                    network: label.toLowerCase().contains("mtn")
+                        ? "MTN"
+                        : label.toLowerCase().contains("telecel")
+                            ? "Telecel"
+                            : "AirtelTigo",
+                    FirebaseBundles: label.toLowerCase().contains("mtn")
+                        ? mtnBundles
+                        : label.toLowerCase().contains("telecel")
+                            ? telecelBundles
+                            : airtelTigoBundles,
+                  ),
+                ),  
+      
+        );
+      },
         child: Container(
           width: width,
           height: width,

@@ -1,5 +1,6 @@
 import 'package:cletech/auth_functions.dart';
 import 'package:cletech/screens/aboutUs/about.dart';
+
 import 'package:cletech/screens/orders/orders.dart';
 import 'package:cletech/screens/products/products.dart';
 import 'package:cletech/screens/profile/profile.dart';
@@ -59,10 +60,12 @@ class _MainEntryScreenState extends State<MainEntryScreen> {
         _TabNavigator(child: OrdersScreen(email: userDetails?['email'] ?? '')),
         _TabNavigator(child: ProfileScreen(userInfo: userDetails ?? {},)),
         const _TabNavigator(child: AboutScreen()),
+         
       ];
 
   @override
   Widget build(BuildContext context) {
+
     if (isLoading) {
       return Scaffold(
         body: Center(
@@ -118,6 +121,11 @@ class _MainEntryScreenState extends State<MainEntryScreen> {
             selectedIcon: Icon(Icons.info),
             label: 'About Us',
           ),
+          /* NavigationDestination(
+            icon: Icon(Icons.info_outlined),
+            selectedIcon: Icon(Icons.info),
+            label: 'Test',
+          ), */
         ],
       ),
     );

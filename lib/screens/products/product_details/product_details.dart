@@ -21,18 +21,18 @@ class _PackagesScreenState extends State<PackagesScreen> {
   Widget build(BuildContext context) {
     // Determine background decoration
     BoxDecoration backgroundDecoration;
-    switch (widget.network) {
-      case "MTN":
+    switch (widget.network.toLowerCase()) {
+      case "mtn":
         backgroundDecoration = BoxDecoration(
           color: Colors.yellow.withAlpha((0.1 * 255).round()),
         );
         break;
-      case "Telecel":
+      case "telecel":
         backgroundDecoration = BoxDecoration(
           color: Colors.red.withAlpha((0.1 * 255).round()),
         );
         break;
-      case "AirtelTigo":
+      case "airteltigo":
         backgroundDecoration = BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -51,7 +51,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
     // Example bundles for demonstration
      final List<DataBundle> bundles = [];
     for (var item in widget.FirebaseBundles) {
-      bundles.add(DataBundle(label: item['name'], dataAmount: item['dataVolume'], cost: item['price'].toString(), type: item['validity'], id: item['id'],));
+      bundles.add(DataBundle(label: item['name'], dataAmount: item['data_volume'], cost: item['price'].toString(), type: item['validity'], id: item['id'],));
     }
 
     return Scaffold(

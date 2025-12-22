@@ -1,5 +1,7 @@
+import 'package:cletech/screens/paymentScreen/payment_screen.dart';
 import 'package:cletech/screens/products/product_details/models/data_bundle.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DataBundleCard extends StatelessWidget {
   final DataBundle bundle;
@@ -9,28 +11,43 @@ class DataBundleCard extends StatelessWidget {
     super.key,
     required this.bundle,
     required this.network,
-    
+
   });
 
   @override
   Widget build(BuildContext context) {
+    final String email = FirebaseAuth.instance.currentUser!.email!;
+    final String customerName =
+        FirebaseAuth.instance.currentUser!.displayName ?? 'Customer';
     // Colors by network
     final Color backgroundColor = network == 'MTN'
         ? Colors.yellow.shade50
         : network == 'Telecel'
-            ? Colors.red.shade50
-            : Colors.purple.shade50; // AirtelTigo
+        ? Colors.red.shade50
+        : Colors.purple.shade50; // AirtelTigo
 
     final Color borderColor = network == 'MTN'
         ? Colors.yellow.shade700
         : network == 'Telecel'
-            ? Colors.red.shade700
-            : Colors.purple.shade700; // AirtelTigo
+        ? Colors.red.shade700
+        : Colors.purple.shade700; // AirtelTigo
 
     final Color labelColor = borderColor;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PaymentScreen(
+              bundleId: bundle.id,
+              bundleValue: bundle.dataAmount,
+              email: email,
+              customerName: customerName,
+              selectedPackage: network.toLowerCase(),
+            ),
+          ),
+        );
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -54,8 +71,10 @@ class DataBundleCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: labelColor,
                     borderRadius: BorderRadius.circular(8),
@@ -63,7 +82,9 @@ class DataBundleCard extends StatelessWidget {
                   child: Text(
                     bundle.label,
                     style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Text(
@@ -88,15 +109,20 @@ class DataBundleCard extends StatelessWidget {
                       children: const [
                         Icon(Icons.storage, size: 16, color: Colors.grey),
                         SizedBox(width: 4),
-                        Text("Data",
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12)),
+                        Text(
+                          "Data",
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(bundle.dataAmount,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      bundle.dataAmount,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
                 Column(
@@ -105,15 +131,20 @@ class DataBundleCard extends StatelessWidget {
                       children: const [
                         Icon(Icons.attach_money, size: 16, color: Colors.grey),
                         SizedBox(width: 4),
-                        Text("Cost",
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12)),
+                        Text(
+                          "Cost",
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(bundle.cost,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      bundle.cost,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ],
