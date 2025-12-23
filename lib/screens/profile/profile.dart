@@ -65,79 +65,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _saveChanges() async {
-    setState(() => _saving = true);
+  setState(() => _saving = true);
 
-    try {
-      await updateUserProfile({
-        "name": _nameController.text.trim(),
-        "phone": _phoneController.text.trim(),
-        "region": _regionController.text.trim(),
-        "momo": _momoController.text.trim(),
-      });
+  try {
+    await updateUserProfileName(
+      _nameController.text.trim(),
+    );
 
-     ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-    behavior: SnackBarBehavior.floating,
-    elevation: 8,
-    backgroundColor: Colors.white,
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-    ),
-    duration: const Duration(seconds: 2),
-    content: Row(
-      children: const [
-        Icon(Icons.check_circle, color: Colors.green, size: 28),
-        SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            "Profile updated successfully!",
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
-          ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.white,
+        content: Row(
+          children: const [
+            Icon(Icons.check_circle, color: Colors.green),
+            SizedBox(width: 12),
+            Text("Profile updated successfully!"),
+          ],
         ),
-      ],
-    ),
-  ),
-);
-
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-    behavior: SnackBarBehavior.floating,
-    elevation: 8,
-    backgroundColor: Colors.white,
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-    ),
-    duration: const Duration(seconds: 2),
-    content: Row(
-      children:  [
-        Icon(Icons.check_circle, color: Colors.green, size: 28),
-        SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            "Profile update failed: $e",
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-);
-
-    }
-
-    setState(() => _saving = false);
+      ),
+    );
+  } catch (e) {
+    print(e);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Profile update failed: $e"),
+      ),
+    );
   }
+
+  setState(() => _saving = false);
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -175,9 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     _buildEditableField("Full Name", _nameController),
                     _buildNonEditableField("Email", _emailController),
-                    _buildEditableField("Phone Number", _phoneController),
-                    _buildEditableField("Region", _regionController),
-                    _buildEditableField("MoMo Number", _momoController),
+                   
                   ],
                 ),
               ),
